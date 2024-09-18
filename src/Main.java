@@ -30,7 +30,7 @@ public class Main {
             System.out.println(token);
         System.out.println("\n\n\n Name Recognition\n");
 
-        InputStream inputStream = new FileInputStream("C:\\Users\\juhon\\IdeaProjects\\OpenNLP_project\\src\\en-ner-person.bin");
+        InputStream inputStream = new FileInputStream("src\\en-ner-person.bin");
         TokenNameFinderModel model = new TokenNameFinderModel(inputStream);
 
         NameFinderME nameFinder = new NameFinderME(model);
