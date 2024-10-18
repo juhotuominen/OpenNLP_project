@@ -1,44 +1,49 @@
-import opennlp.tools.tokenize.*;
-import opennlp.tools.namefind.*;
-import opennlp.tools.util.*;
+import opennlp.tools.langdetect.Language;
+import opennlp.tools.langdetect.LanguageDetectorME;
+import opennlp.tools.langdetect.LanguageDetectorModel;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        String sentence = "This is a test sentence. It is used to test OpenNLP functions";
-        String[] nameSentence = new String[]{
-                "Mike",
-                "and",
-                "Smith",
-                "are",
-                "friends"
-        } ;
+    public static void main(String[] args) {
+        try {
+            // Load the pre-trained language detection model
+            InputStream modelInputStream = new FileInputStream("src/langdetect-183.bin"); // FOR WINDOWS USE "src\\langdetect-183.bin"
+            LanguageDetectorModel model = new LanguageDetectorModel(modelInputStream);
 
-        System.out.println(" Tokenization\n");
-        SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
-        String tokens[] = tokenizer.tokenize(sentence);
+            // Initialize LanguageDetector
+            LanguageDetectorME languageDetector = new LanguageDetectorME(model);
 
-        for (String token : tokens)
-            System.out.println(token);
-        System.out.println("\n\n\n Whitespace Tokenization\n");
+            // Input text for language detection
+            String englishText = "The quick brown fox jumps over the lazy dog. Can you tell me where the nearest restaurant is?"; // English example
+            String frenchText = "Le renard brun rapide saute par-dessus le chien paresseux. Pouvez-vous me dire où se trouve le restaurant le plus proche?";  // French example
+            String finnishText = "Hei, miten menee? Voitko kertoa minulle, missä on lähin ravintola?";  // Finnish example
 
-        WhitespaceTokenizer whitespaceTokenizer = WhitespaceTokenizer.INSTANCE;
-        String whiteTokens[] = whitespaceTokenizer.tokenize(sentence);
+            // Detect the language
+            Language detectedLanguage = languageDetector.predictLanguage(englishText);
 
-        for (String token : whiteTokens)
-            System.out.println(token);
-        System.out.println("\n\n\n Name Recognition\n");
+            // Print detected language and confidence score
+            System.out.println("Detected Language: " + detectedLanguage.getLang());
+            System.out.println("Confidence: " + detectedLanguage.getConfidence() + "\n");
 
-        InputStream inputStream = new FileInputStream("src\\en-ner-person.bin");
-        TokenNameFinderModel model = new TokenNameFinderModel(inputStream);
+            // Detect the language
+            detectedLanguage = languageDetector.predictLanguage(frenchText);
 
-        NameFinderME nameFinder = new NameFinderME(model);
-        Span nameSpans[] = nameFinder.find(nameSentence);
+            // Print detected language and confidence score
+            System.out.println("Detected Language: " + detectedLanguage.getLang());
+            System.out.println("Confidence: " + detectedLanguage.getConfidence() + "\n");
 
-        for(Span s: nameSpans)
-            System.out.println(s.toString());
+            // Detect the language
+            detectedLanguage = languageDetector.predictLanguage(finnishText);
 
+            // Print detected language and confidence score
+            System.out.println("Detected Language: " + detectedLanguage.getLang());
+            System.out.println("Confidence: " + detectedLanguage.getConfidence());
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
